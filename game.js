@@ -19,15 +19,17 @@ window.cancelRequestAnimFrame = ( function() {
 	clearTimeout 
 })();
 
+var isPaused = false;
 
 //Initializing canvas and ctx
 var canvas = document.getElementById("canvas"),
 	ctx = canvas.getContext("2d"), //with ctx we can draw and handle things in the canvas
-	WIDTH = 400, // Window's width 
+	WIDTH = 500, // Window's width 
 	HEIGHT = 450, // Window's height
 	keystate = {}, //Store the value of the keybord key when pressed 
 	leftArrow   = 37, //Keyboard left arrow key
-	rightArrow = 39; //keyboard right arrow key
+	rightArrow = 39,
+	spaceBar = 32; //keyboard right arrow key
 
 
 var ball = {
@@ -46,20 +48,22 @@ var ball = {
 		ctx.arc(this.x, this.y, this.side/2, 0, Math.PI*2, false); //start angle = 0, end angle = PI*2 (angle of a circle.), anti-clockwise = false 
 		ctx.fill();
 		
+		
 		//ctx.fillRect(this.x, this.y, this.side, this.side);
 	},
-	init: function(){
+	init: function(dir){
 		// set the x and y position
 		var r = Math.random();
-		this.y = 50;
-		this.x = WIDTH/2;
 		
+		this.y = player.y+player.height;
+		this.x = (WIDTH - this.side)*r;
+
 		// steeper angle
 		var phi = 0.1*Math.PI*(1 - 2*r);
 		
 		// set velocity direction and magnitude
 		this.vel = {
-			y: 1*this.speed*Math.cos(phi),
+			y: dir*this.speed*Math.cos(phi),
 			x: this.speed*Math.sin(phi)
 		}
 	},
@@ -94,9 +98,15 @@ var ball = {
 
 		//Out of y
 		if (0 > this.y+this.side || this.y > HEIGHT){
-			this.init();
+			isPaused = true;
+			point();
+
 		}
 
+		if (isPaused && keystate[spaceBar]){
+			this.init(-1);
+			isPaused = false;
+		} 
 
 	}
 
@@ -107,7 +117,7 @@ var player = {
 	y: null,
 	speed: 10,
 	height:  10,
-	width: 100,
+	width: 120,
 
 	update: function() {
 		if (keystate[leftArrow]) this.x -= this.speed;
@@ -126,7 +136,7 @@ var ai = {
 	y: null,
 
 	height:  10,
-	width: 100,
+	width: 120,
 
 	update: function() {
 		// calculate ideal position
@@ -165,19 +175,11 @@ function main() {
 	ai.x = WIDTH/2 - player.width/2;
 
 	//Serve the ball
-	ball.init();
+	ball.init(-1);
+
 
 	// game loop function
-	//animationLoop();
-
-	// game loop function
-	var loop = function() {
-		update();
-		draw();
-
-		window.requestAnimationFrame(loop, canvas);
-	};
-	window.requestAnimationFrame(loop, canvas);
+	animationLoop();
 
 
 }
@@ -187,16 +189,16 @@ function main() {
 function draw() {
 	var img = new Image();
 
-	img.src = "images/triangular.png";
-	img.onload = function () {
-	var pattern = ctx.createPattern(img, "repeat");
+	// img.src = "images/triangular.png";
+	// img.onload = function () {
+	// var pattern = ctx.createPattern(img, "repeat");
 
-	ctx.fillStyle = pattern;
-	ctx.fillRect(0, 0, WIDTH, HEIGHT);
-	};
+	// ctx.fillStyle = pattern;
+	// ctx.fillRect(0, 0, WIDTH, HEIGHT);
+	// };
 
-	//ctx.fillStyle = "black"; //fill color
-	//ctx.fillRect(0, 0, WIDTH, HEIGHT); //start cordinates and size
+	ctx.fillStyle = "black"; //fill color
+	ctx.fillRect(0, 0, WIDTH, HEIGHT); //start cordinates and size
 	ctx.save();
 
 	//Now start drawing white
@@ -206,36 +208,40 @@ function draw() {
 	player.draw();
 	ball.draw();
 
+
+
 }
 
 //running animations
 function animationLoop() {
 	//every frame, call this function
 	init = requestAnimFrame(animationLoop); 
-	update();
 	draw();
+	update();
 }
 
 //Function to update ball and paddles positions, score, it's called on every frame...
 function update() {
 
+
 	ball.update();
 	player.update();
 	ai.update();
 
+
 }
 
 
-function gameOver() { 
+function point(player){
 	ctx.fillStyle = "white"; 
 	ctx.font = "20px Arial, sans-serif"; 
 	ctx.textAlign = "center"; 
 	ctx.textBaseline = "middle"; 
-	ctx.fillText("Game Over", WIDTH/2, HEIGHT/2 + 25 );
-
+	ctx.fillText("PRESS SPACE BAR TO SERVE", WIDTH/2, HEIGHT/2);
 	// Stop the Animation
-	cancelRequestAnimFrame(init);
+	//cancelRequestAnimFrame(init);
 }
+
 
 
 main();
