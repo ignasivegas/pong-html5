@@ -42,19 +42,15 @@ var ball = {
 		//function to draw the ball in canvas
 		//Start drawing
 		ctx.beginPath();
-		//Color of the ball
-		ctx.fillStyle = this.color;
 		///position and form
 		ctx.arc(this.x, this.y, this.side/2, 0, Math.PI*2, false); //start angle = 0, end angle = PI*2 (angle of a circle.), anti-clockwise = false 
 		ctx.fill();
-		
-		
-		//ctx.fillRect(this.x, this.y, this.side, this.side);
 	},
 	init: function(dir){
-		// set the x and y position
-		var r = Math.random();
 		
+		var r = Math.random();
+
+		// set the x and y position
 		this.y = player.y+player.height;
 		this.x = (WIDTH - this.side)*r;
 
@@ -83,6 +79,7 @@ var ball = {
 			return ay < by+bh && ax < bx+bw && by < ay+ah && bx < ax +aw;
 		}
 		var p = this.vel.y < 0 ? ai : player;
+
 		if (Collision(p.x, p.y, p.width, p.height, this.x, this.y, this.side, this.side)){
 
 			pi = Math.PI;
@@ -98,16 +95,14 @@ var ball = {
 
 		//Out of y
 		if (0 > this.y+this.side || this.y > HEIGHT){
-			isPaused = true;
-			point();
+		
+			//Who scored?
+			var p = this.vel.y < 0 ? player : ai;
+			point(p);
 
 		}
 
-		if (isPaused && keystate[spaceBar]){
-			this.init(-1);
-			isPaused = false;
-		} 
-
+		
 	}
 
 };
@@ -118,6 +113,7 @@ var player = {
 	speed: 10,
 	height:  10,
 	width: 120,
+	score: 0,
 
 	update: function() {
 		if (keystate[leftArrow]) this.x -= this.speed;
@@ -134,9 +130,9 @@ var player = {
 var ai = {
 	x: null,
 	y: null,
-
 	height:  10,
 	width: 120,
+	score: 0,
 
 	update: function() {
 		// calculate ideal position
@@ -224,22 +220,34 @@ function animationLoop() {
 function update() {
 
 
-	ball.update();
+	if (!isPaused) ball.update();
 	player.update();
 	ai.update();
+
+	if (isPaused){
+		ctx.fillStyle = "white"; 
+		ctx.font = "20px Arial, sans-serif"; 
+		ctx.textAlign = "center"; 
+		ctx.textBaseline = "middle"; 
+		ctx.fillText(ai.score+" - "+player.score, WIDTH/2, HEIGHT/2 - 25);
+		ctx.fillText("PRESS SPACE BAR TO SERVE", WIDTH/2, HEIGHT/2);
+	} 
+
+	if (isPaused && keystate[spaceBar]){
+		ball.init(-1);
+		isPaused = false;		
+	}
 
 
 }
 
 
-function point(player){
-	ctx.fillStyle = "white"; 
-	ctx.font = "20px Arial, sans-serif"; 
-	ctx.textAlign = "center"; 
-	ctx.textBaseline = "middle"; 
-	ctx.fillText("PRESS SPACE BAR TO SERVE", WIDTH/2, HEIGHT/2);
-	// Stop the Animation
-	//cancelRequestAnimFrame(init);
+function point(p){
+	//ball.y = null;
+	//ball.x = null;
+
+	p.score++;
+	isPaused = true;
 }
 
 
