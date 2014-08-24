@@ -28,8 +28,8 @@ var canvas = document.getElementById("canvas"),
 	HEIGHT = 450, // Window's height
 	keystate = {}, //Store the value of the keybord key when pressed 
 	leftArrow   = 37, //Keyboard left arrow key
-	rightArrow = 39,
-	spaceBar = 32; //keyboard right arrow key
+	rightArrow = 39, //keyboard right arrow key
+	spaceBar = 32;  //Keyboard space bar key
 
 
 var ball = {
@@ -185,16 +185,14 @@ function main() {
 function draw() {
 	var img = new Image();
 
-	// img.src = "images/triangular.png";
-	// img.onload = function () {
-	// var pattern = ctx.createPattern(img, "repeat");
+	img.src = "images/triangular.png";
+	img.onload = function () {
+	var pattern = ctx.createPattern(img, "repeat");
 
-	// ctx.fillStyle = pattern;
-	// ctx.fillRect(0, 0, WIDTH, HEIGHT);
-	// };
+	ctx.fillStyle = pattern;
+	ctx.fillRect(0, 0, WIDTH, HEIGHT);
+	};
 
-	ctx.fillStyle = "black"; //fill color
-	ctx.fillRect(0, 0, WIDTH, HEIGHT); //start cordinates and size
 	ctx.save();
 
 	//Now start drawing white
