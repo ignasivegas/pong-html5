@@ -224,10 +224,11 @@ function update() {
 
 	if (isPaused){
 		ctx.fillStyle = "white"; 
-		ctx.font = "20px Arial, sans-serif"; 
+		ctx.font = "40px Arial, sans-serif"; 
 		ctx.textAlign = "center"; 
 		ctx.textBaseline = "middle"; 
 		ctx.fillText(ai.score+" - "+player.score, WIDTH/2, HEIGHT/2 - 25);
+		ctx.font = "10px Arial, sans-serif"; 
 		ctx.fillText("PRESS SPACE BAR TO SERVE", WIDTH/2, HEIGHT/2);
 	} 
 
